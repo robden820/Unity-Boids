@@ -6,7 +6,7 @@ public class Spawn : MonoBehaviour
 {
 
     public GameObject boid;
-    [Range(20, 100)] public int boidNumber = 20;
+    [Range(1, 100)] public int boidNumber = 20;
     [Range(4, 7)] public float speed;
     
     void Start()
@@ -15,8 +15,8 @@ public class Spawn : MonoBehaviour
         start.y = 0.5f;
         for(int i = 0; i < boidNumber; i++)
         {
-            start.x = Random.Range(-3.0f, 3.0f);
-            start.z = Random.Range(-3.0f, 3.0f);
+            start.x = Random.Range(-2.0f, 2.0f);
+            start.z = Random.Range(-2.0f, 2.0f);
 
             float angle = Random.Range(-180.0f, 180.0f);
             Quaternion rotate = Quaternion.Euler(0, angle, 0);

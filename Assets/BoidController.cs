@@ -4,16 +4,14 @@ using UnityEngine;
 
 public class BoidController : MonoBehaviour
 {
-    public float speed;
+    public float speed = 4f;
     public float turnSpeed = 4f;
     public float collisionDistance = 3f;
-    public float viewRadius = 240f;
+    public float viewRadius = 280f;
     public float segments = 10f;
     
     void Update()
     {
-        
-
         Vector3 startPos = transform.position;
 
         float startAngle = viewRadius * -0.5f;
@@ -30,23 +28,31 @@ public class BoidController : MonoBehaviour
             if (Physics.Raycast(startPos, targetPos, out hit, collisionDistance))
             {
                 Debug.DrawRay(startPos, targetPos * hit.distance, Color.red);
-                TurnBoid();
+                
                 GameObject hitBoid = hit.transform.gameObject;
                 if (hitBoid.tag == "boid")
                 {
                     MatchOrientation(hitBoid);
                     nearbyBoids.Add(hitBoid);
                 }
+                TurnBoid(i);
             }
         }
-        transform.Translate(Vector3.forward * Time.deltaTime * speed);
-        CentreFlock(nearbyBoids);
+        
+        //CentreFlock(nearbyBoids);
+        transform.Translate(Vector3.forward * Time.deltaTime * -speed);
+        
     }
 
-    void TurnBoid()
+    void TurnBoid(float i)
     {
-            float angle = 10.0f * Random.Range(-1.0f, 1.0f);
-            transform.Rotate(0.0f, angle, 0.0f, Space.Self);
+        float turnAngle = 0.25f * turnSpeed;
+
+        if (i > 0)
+        {
+            turnAngle *= -1;
+        }
+            transform.Rotate(0.0f, turnAngle, 0.0f, Space.Self);
     }
 
     void MatchOrientation(GameObject hitBoid)
@@ -54,8 +60,7 @@ public class BoidController : MonoBehaviour
         Quaternion startOrientation = transform.rotation;
         Quaternion targetOrientation = hitBoid.transform.rotation;
 
-        transform.rotation = Quaternion.RotateTowards(startOrientation, targetOrientation, turnSpeed);
-
+        transform.rotation = Quaternion.RotateTowards(startOrientation, targetOrientation, 0.2f);
     }
 
     void CentreFlock(List<GameObject> nearbyBoids)
@@ -69,24 +74,11 @@ public class BoidController : MonoBehaviour
         }
         target = target / (numBoids+1);
 
-        Vector3 direction = Vector3.RotateTowards(transform.forward, target - transform.position, speed * Time.deltaTime, 0.0f);
+        Vector3 direction = Vector3.RotateTowards(transform.forward, target - transform.position, speed * Time.deltaTime * 0.1f, 0.0f);
         Debug.DrawRay(transform.position, direction, Color.blue);
         transform.rotation = Quaternion.LookRotation(direction);
         
     }
 
     public void setSpeed(float s) => speed = s;
-
-    void OnTriggerExit(Collider container)
-    {
-        Vector3 position = transform.position;
-        if (Mathf.Abs(position.z) > 5){
-            position.z *= -1;
-        }
-        if (Mathf.Abs(position.x) > 5){
-            position.x *= -1;
-        }
-
-        transform.position = position;
-    }
 }
